@@ -123,9 +123,9 @@ const excluirConta = (req, res) => {
 
 
 const depositar = (req, res) => {
-    const { numeroConta, valor } = req.body;
+    const { numero_conta, valor } = req.body;
     const verificaConta = contas.find((conta) => {
-        return conta.numero === Number(numeroConta);
+        return conta.numero === Number(numero_conta);
     });
 
     if (!verificaConta) {
@@ -138,7 +138,7 @@ const depositar = (req, res) => {
 
     depositos.push({
         date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-        numeroConta: numeroConta,
+        numero_conta: numero_conta,
         valor: valor,
     });
 
@@ -147,13 +147,13 @@ const depositar = (req, res) => {
 }
 
 const efetuarSaque = (req, res) => {
-    const { numeroConta, valor, senha } = req.body
+    const { numero_conta, valor, senha } = req.body
     if (!senha) {
         return res.status(400).json({ Mensagem: "Senha é obrigatório!" });
     }
 
     const verificarConta = contas.find((conta) => {
-        return conta.numero === Number(numeroConta)
+        return conta.numero === Number(numero_conta)
     })
 
     if (!verificarConta) {
@@ -174,7 +174,7 @@ const efetuarSaque = (req, res) => {
 
     saques.push({
         data: format(new Date(), "yyyy-MM-dd' 'hh:mm:ss"),
-        numeroConta,
+        numero_conta,
         valor
     })
     verificarConta.saldo -= valor;
@@ -183,13 +183,13 @@ const efetuarSaque = (req, res) => {
 }
 
 const efetuarTranferencia = (req, res) => {
-    const { numeroContaOrigem, numeroContaDestino, valor, senha } = req.body;
-    if (!numeroContaOrigem || isNaN(numeroContaOrigem) || !numeroContaDestino || isNaN(numeroContaDestino) || !valor || !senha) {
-        return res.status(400).jsos({ mensagem: "O numero da conta de destino e origem, valor e senha são obrigatórios!" })
+    const { numero_conta_origem, numero_conta_destino, valor, senha } = req.body;
+    if (!numero_conta_origem || isNaN(numero_conta_origem) || !numero_conta_destino || isNaN(numero_conta_destino) || !valor || !senha) {
+        return res.status(400).json({ mensagem: "O numero da conta de destino e origem, valor e senha são obrigatórios!" })
     }
 
     const verificarContaOrigem = contas.find((conta) => {
-        return conta.numero === Number(numeroContaOrigem)
+        return conta.numero === Number(numero_conta_origem)
     })
 
     if (!verificarContaOrigem) {
@@ -197,7 +197,7 @@ const efetuarTranferencia = (req, res) => {
     }
 
     const verificarContaDestino = contas.find((conta) => {
-        return conta.numero === Number(numeroContaDestino)
+        return conta.numero === Number(numero_conta_destino)
     })
 
     if (!verificarContaDestino) {
@@ -225,8 +225,8 @@ const efetuarTranferencia = (req, res) => {
 
     transferencias.push({
         data: format(new Date(), "yyyy-MM-dd' 'hh:mm:ss"),
-        numeroContaOrigem,
-        numeroContaDestino,
+        numero_conta_origem,
+        numero_conta_destino,
         valor,
     });
 
@@ -238,14 +238,14 @@ const efetuarTranferencia = (req, res) => {
 }
 
 const exibirSaldo = (req, res) => {
-    const { numeroConta, senha } = req.query
+    const { numero_conta, senha } = req.query
 
-    if (!numeroConta || isNaN(numeroConta) || !senha) {
+    if (!numero_conta || isNaN(numero_conta) || !senha) {
         return res.status(400).json({ mensgem: "Numero da conta e senha são obrigatórios" })
     }
 
     const verificarConta = contas.find((conta) => {
-        return conta.numero === Number(numeroConta)
+        return conta.numero === Number(numero_conta)
     })
 
     if (!verificarConta) {
@@ -255,17 +255,19 @@ const exibirSaldo = (req, res) => {
     if (senha !== verificarConta.usuario.senha) {
         return res.status(400).json({ Mensagem: "Senha incorreta" });
     }
-    return res.status(200).json(`saldo: ${verificarConta.saldo}`);
+
+
+    return res.status(200).json({ saldo: verificarConta.saldo });
 }
 
 const exibirExtrato = (req, res) => {
-    const { numeroConta, senha } = req.query
-    if (!numeroConta || isNaN(numeroConta) || !senha) {
+    const { numero_conta, senha } = req.query
+    if (!numero_conta || isNaN(numero_conta) || !senha) {
         return res.status(400).json({ mensgem: "Numero da conta e senha são obrigatórios" })
     }
 
     const verificarConta = contas.find((conta) => {
-        return conta.numero === Number(numeroConta)
+        return conta.numero === Number(numero_conta)
     })
 
     if (!verificarConta) {
@@ -277,12 +279,12 @@ const exibirExtrato = (req, res) => {
     }
 
     const depositosEfetuados = depositos.filter((deposito) => {
-        return Number(deposito.numeroConta) === Number(verificarConta.numero)
+        return Number(deposito.numero_conta) === Number(verificarConta.numero)
 
     })
 
     const saquesEfetuados = saques.filter((saque) => {
-        return Number(saque.numeroConta) === Number(verificarConta.numero)
+        return Number(saque.numero_conta) === Number(verificarConta.numero)
     })
 
     const transferenciasEnviadas = transferencias.filter((transferencia) => {

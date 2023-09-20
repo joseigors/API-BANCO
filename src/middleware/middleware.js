@@ -1,11 +1,11 @@
 const verificarsenha = (req, res, next) => {
-    const { senhaBanco } = req.query
+    const { senha_banco } = req.query
     const { banco } = require('../database/db')
 
-    if (!senhaBanco) {
+    if (!senha_banco) {
         return res.status(401).json({ mensagem: "Senha obrigatória, por favor insira a senha solicitada!" })
     }
-    if (senhaBanco === banco.senha) {
+    if (senha_banco === banco.senha) {
         next()
     } else {
         return res.status(403).json({ mensagem: "Senha incorreta" });
@@ -50,9 +50,9 @@ function verificarDados(req, res, next) {
 }
 
 const verificarNumeroContaEValor = (req, res, next) => {
-    const { numeroConta, valor } = req.body;
+    const { numero_conta, valor } = req.body;
 
-    if (!numeroConta || isNaN(numeroConta) || !valor) {
+    if (!numero_conta || isNaN(numero_conta) || !valor) {
         res.status(400).json({
             mensagem: "O número da conta e o valor são obrigatórios!.",
         });
